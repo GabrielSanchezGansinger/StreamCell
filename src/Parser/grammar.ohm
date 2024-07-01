@@ -1,0 +1,79 @@
+Parser{
+    START=
+    "=" FUNCTION_CALL | "=" CONSTANT | "=" CellReference | "=" LOGICFORMULA  
+    
+    CONSTANT
+    = NUMBER | STRING | BOOL
+    
+    FUNCTION_CALL
+    = MULTIFUNCTION | SETFUNCTION
+    
+    ARGUMENTS
+    = ARGUMENT ";" ARGUMENTS -- multiple_arguments
+    | ARGUMENT	-- single_argument
+    
+    ARGUMENT
+    = FUNCTION_CALL -- function
+    | NUMBER -- number
+    | REFERENCE -- ref
+    
+    REFERENCE
+    = PartReference  PartReference ":" PartReference PartReference -- Range_reference
+    | CellReference -- Single_reference
+    
+    MULTIFUNCTION
+    = "SUM(" ARGUMENTS ")" -- sum
+    | "MIN(" ARGUMENTS ")" -- min 
+    | "MULT(" ARGUMENTS ")" -- mult 
+    | "MAX(" ARGUMENTS ")" -- max
+    | "COUNT(" ARGUMENTS ")" -- count
+    | "AVG(" ARGUMENTS ")" -- avg
+    
+    SETFUNCTION
+    = "IF(" CONDITIONAL ";" LOGICARG ";" LOGICARG ")" -- if
+    | "DIV(" SINGLEARGUMENT ";" SINGLEARGUMENT ")" -- div
+    | "MOD(" SINGLEARGUMENT ";" SINGLEARGUMENT ")" -- mod
+    | "MINUS(" SINGLEARGUMENT ";" SINGLEARGUMENT ")" -- minus
+    | "SIN(" SINGLEARGUMENT ")" -- sin
+    | "COS(" SINGLEARGUMENT ")"-- cos
+    | "TAN(" SINGLEARGUMENT ")" -- tan
+    | "LOG(" SINGLEARGUMENT ";" SINGLEARGUMENT ")" -- log
+    | "POWER(" SINGLEARGUMENT ";" SINGLEARGUMENT ")" -- power
+    | "SQRT(" SINGLEARGUMENT ")" -- sqrt
+    | "ABS(" SINGLEARGUMENT ")" -- abs
+    | "FLOOR(" SINGLEARGUMENT ")" -- floor
+    | "CEIL(" SINGLEARGUMENT ")" -- ceiling
+    
+    SINGLEARGUMENT 
+    = FUNCTION_CALL | NUMBER | CellReference
+    
+    CONDITIONAL
+    = LOGICFORMULA
+    | CellReference
+    | BOOL
+
+    LOGICFORMULA
+    = "LE("LOGICARG ";" LOGICARG ")" | "GE(" LOGICARG ";" LOGICARG ")" | "EQUAL("LOGICARG ";" LOGICARG ")" 
+    
+    LOGICARG
+    = CONSTANT | CellReference | FUNCTION_CALL
+    
+    NUMBER
+    =  "-"? digit+ "." digit+   -- fract
+    | "-"? digit+ -- whole
+    | "-"? "#PI" -- pi
+    | "-"? "#EULER" -- euler
+    
+    STRING
+    = "\"" alnum+ "\""
+    
+    BOOL
+    = "true" | "false"
+    
+    CellReference 
+    = PartReference PartReference
+
+    PartReference
+    = "$col_" alnum+ -- row_ref
+    |"$row_" alnum+ -- col_ref
+    }
